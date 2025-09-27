@@ -1,0 +1,16 @@
+# Go
+/bin/
+/*.exe
+*.log
+*.out
+*.test
+
+# Env
+.env
+
+# VS Code
+.vscode/settings.json
+.vscode/*.code-workspace
+
+# Docker
+*.tar

@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Bot",
+      "type": "go",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.go",
+      "env": {
+        "BOT_TOKEN": "your-token-here",
+        "ALLOW_REGISTRATION": "true"
+      }
+    }
+  ]
+}

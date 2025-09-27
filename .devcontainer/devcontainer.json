@@ -1,0 +1,21 @@
+{
+  "name": "Authelia-Bot-Go",
+  "build": {
+    "dockerfile": "../Dockerfile"
+  },
+  "workspaceFolder": "/app",
+  "settings": {
+    "go.toolsManagement.autoUpdate": true
+  },
+  "extensions": [
+    "golang.Go"
+  ],
+  "mounts": [
+    "source=${localWorkspaceFolder}/config,target=/app/config,type=bind",
+    "source=${localWorkspaceFolder}/notifications,target=/app/notifications,type=bind"
+  ],
+  "env": {
+    "BOT_TOKEN": "your-token-here",
+    "ALLOW_REGISTRATION": "true"
+  }
+}

@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  notifier:
+    build: .
+    container_name: notifier
+    environment:
+      - BOT_TOKEN=8253677522:AAE0J5XrUGOXL4bX6Qqf4osCgR8pg9eDY6U
+      - ALLOW_REGISTRATION=true
+    volumes:
+      - ./config:/app/config
+      - ./notifications:/app/notifications
+    ports:
+      - "6060:6060"  # optional: for pprof debugging
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6060/debug/pprof/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
