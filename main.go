@@ -12,26 +12,40 @@ import (
 func init() {
 	godotenv.Load()
 }
-
 func main() {
 	bot.EnsureStartupFiles()
-	// Load token from environment
+
+	token := mustGetToken()
+	botAPI := mustInitBot(token)
+
+	registerCommands(botAPI)
+	go bot.WatchNotifications(botAPI)
+
+	startUpdateLoop(botAPI)
+}
+
+// --- helpers ---
+
+func mustGetToken() string {
 	token := os.Getenv("BOT_TOKEN")
 	if token == "" {
 		log.Fatal("BOT_TOKEN not set")
 	}
 	log.Println("Bot starting...")
-	log.Println("BOT_TOKEN =", os.Getenv("BOT_TOKEN"))
+	log.Println("BOT_TOKEN =", token)
+	return token
+}
 
-	// Init bot
+func mustInitBot(token string) *tgbotapi.BotAPI {
 	botAPI, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	log.Printf("Authorized on account %s", botAPI.Self.UserName)
+	return botAPI
+}
 
-	// Add commands info
+func registerCommands(botAPI *tgbotapi.BotAPI) {
 	commands := []tgbotapi.BotCommand{
 		{Command: "chatid", Description: "Show chatId"},
 		{Command: "whoami", Description: "Show user registration status"},
@@ -52,46 +66,46 @@ func main() {
 	if _, err := botAPI.Request(setCmd); err != nil {
 		log.Println("Failed to set command menu:", err)
 	}
+}
 
-	// Start file watcher in background
-	go bot.WatchNotifications(botAPI)
-
-	// Start updates channel
+func startUpdateLoop(botAPI *tgbotapi.BotAPI) {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 	updates := botAPI.GetUpdatesChan(u)
 
-	// Main loop
 	for update := range updates {
 		if update.Message != nil {
-			switch update.Message.Command() {
-			case "chatid":
-				bot.HandleChatID(botAPI, update)
-			case "whoami":
-				bot.HandleWhoAmI(botAPI, update)
-			case "mode":
-				bot.HandleMode(botAPI, update)
-			case "pendings":
-				bot.HandlePendings(botAPI, update)
-			case "health":
-				bot.HandleHealth(botAPI, update)
-			case "register":
-				bot.HandleRegister(botAPI, update)
-			case "unregister":
-				bot.HandleUnregister(botAPI, update)
-			case "unignore":
-				bot.HandleUnignore(botAPI, update)
-			case "notify":
-				bot.HandleNotify(botAPI, update)
-			case "users":
-				bot.HandleUsers(botAPI, update)
-			case "menu":
-				bot.HandleMenu(botAPI, update)
-			}
+			handleMessage(botAPI, update)
 		}
-
 		if update.CallbackQuery != nil {
 			bot.HandleCallback(botAPI, update)
 		}
+	}
+}
+
+func handleMessage(botAPI *tgbotapi.BotAPI, update tgbotapi.Update) {
+	switch update.Message.Command() {
+	case "chatid":
+		bot.HandleChatID(botAPI, update)
+	case "whoami":
+		bot.HandleWhoAmI(botAPI, update)
+	case "mode":
+		bot.HandleMode(botAPI, update)
+	case "pendings":
+		bot.HandlePendings(botAPI, update)
+	case "health":
+		bot.HandleHealth(botAPI, update)
+	case "register":
+		bot.HandleRegister(botAPI, update)
+	case "unregister":
+		bot.HandleUnregister(botAPI, update)
+	case "unignore":
+		bot.HandleUnignore(botAPI, update)
+	case "notify":
+		bot.HandleNotify(botAPI, update)
+	case "users":
+		bot.HandleUsers(botAPI, update)
+	case "menu":
+		bot.HandleMenu(botAPI, update)
 	}
 }

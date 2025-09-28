@@ -2,6 +2,8 @@
 
     on:
       push:
+        tags:
+          - 'v*'
         branches:
           - master
 
@@ -18,9 +20,16 @@
               username: ${{ secrets.DOCKER_USERNAME }}
               password: ${{ secrets.DOCKER_PASSWORD }}
 
-          - name: Build and push Docker image
+          - name: Extract metadata (tags, labels)
+            id: meta
+            uses: docker/metadata-action@v5
+            with:
+              images: fraddy/authelia-bot
+
+          - name: Build and push
             uses: docker/build-push-action@v5
             with:
               context: .
               push: true
-              tags: fraddy/authelia-bot:latest
+              tags: ${{ steps.meta.outputs.tags }}
+              labels: ${{ steps.meta.outputs.labels }}
