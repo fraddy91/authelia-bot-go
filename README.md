@@ -1,3 +1,7 @@
+![GitHub Release](https://img.shields.io/github/v/release/fraddy91/authelia-bot-go)
+![Docker Image Version (latest by date)](https://img.shields.io/docker/v/fraddy/authelia-bot?logo=docker&sort=date)
+![Docker Image Size](https://img.shields.io/docker/image-size/fraddy/authelia-bot)
+
 # Authelia Telegram Bot (Go)
 
 A lightweight, modular, admin-moderated Telegram bot for delivering notifications from Authelia's Notification File Provider with manual registration approval, ignore lists, and abuse-resistant workflows. Built in Go, Dockerized and ready for CI/CD.
